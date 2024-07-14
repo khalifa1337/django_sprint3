@@ -2,12 +2,12 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from .models import Category, Post
-
+from core.constants import ELEMENTS_TO_SHOW
 
 def index(request):
     """Функция для отображения главной страницы."""
     template = 'blog/index.html'
-    post_list = Post.published.all()[:Post.ELEMENTS_TO_SHOW]
+    post_list = Post.published.all()[:ELEMENTS_TO_SHOW]
     context = {'post_list': post_list}
     return render(request, template, context)
 

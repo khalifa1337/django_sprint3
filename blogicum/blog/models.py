@@ -1,25 +1,31 @@
-from core.models import PublishedAndCreateModel
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
+from core.models import PublishedAndCreateModel
+from core.constants import STANDART_MAX_LENGHT
 
 User = get_user_model()
 
 
 class PostQuerySet(models.QuerySet):
-
+    """Отдельная фильтрация QurySet для постов"""
     def with_actual_data(self):
+        """Фильтрация актуальной даты."""
         return self.filter(pub_date__lte=timezone.now())
 
     def published(self):
+        """Фильтрация доступности для публикации."""
         return self.filter(is_published=True)
 
     def category_published(self):
+        """Фильтрация доступности категории."""
         return self.filter(category__is_published=True)
 
 
 class PublishedPostManager(models.Manager):
+    """Менеджер для получения отфильтрованного QuerySet."""
+
     def get_queryset(self) -> models.QuerySet:
         return (
             PostQuerySet(self.model)
@@ -27,6 +33,7 @@ class PublishedPostManager(models.Manager):
             .published()
             .category_published()
         )
+
 
 class Category(PublishedAndCreateModel):
     """
@@ -40,7 +47,7 @@ class Category(PublishedAndCreateModel):
     """
 
     title = models.CharField(
-        max_length=256,
+        max_length=STANDART_MAX_LENGHT,
         null=False,
         blank=False,
         verbose_name='Заголовок'
@@ -79,7 +86,7 @@ class Location(PublishedAndCreateModel):
     """
 
     name = models.CharField(
-        max_length=256,
+        max_length=STANDART_MAX_LENGHT,
         null=False,
         blank=False,
         verbose_name='Название места'
@@ -107,10 +114,8 @@ class Post(PublishedAndCreateModel):
         created_at - дата и время создания поста
     """
 
-    ELEMENTS_TO_SHOW = 5
-
     title = models.CharField(
-        max_length=256,
+        max_length=STANDART_MAX_LENGHT,
         null=False,
         blank=False,
         verbose_name='Заголовок'
