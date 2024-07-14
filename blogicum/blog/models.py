@@ -1,11 +1,34 @@
-from core.models import BaseFieldsModel
+from core.models import PublishedAndCreateModel
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
+
 
 User = get_user_model()
 
 
-class Category(BaseFieldsModel):
+class PostQuerySet(models.QuerySet):
+
+    def with_actual_data(self):
+        return self.filter(pub_date__lte=timezone.now())
+
+    def published(self):
+        return self.filter(is_published=True)
+
+    def category_published(self):
+        return self.filter(category__is_published=True)
+
+
+class PublishedPostManager(models.Manager):
+    def get_queryset(self) -> models.QuerySet:
+        return (
+            PostQuerySet(self.model)
+            .with_actual_data()
+            .published()
+            .category_published()
+        )
+
+class Category(PublishedAndCreateModel):
     """
     Модель для хранения данных о категориях.
     Содержит поля:
@@ -38,7 +61,7 @@ class Category(BaseFieldsModel):
         )
     )
 
-    class Meta:
+    class Meta(PublishedAndCreateModel.Meta):
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
@@ -46,7 +69,7 @@ class Category(BaseFieldsModel):
         return self.title
 
 
-class Location(BaseFieldsModel):
+class Location(PublishedAndCreateModel):
     """
     Модель для хранения данных о местоположениях.
     Содержит поля:
@@ -62,7 +85,7 @@ class Location(BaseFieldsModel):
         verbose_name='Название места'
     )
 
-    class Meta:
+    class Meta(PublishedAndCreateModel.Meta):
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 
@@ -70,7 +93,7 @@ class Location(BaseFieldsModel):
         return self.name
 
 
-class Post(BaseFieldsModel):
+class Post(PublishedAndCreateModel):
     """
     Модель для хранения данных о постах.
     Содержит поля:
@@ -83,6 +106,8 @@ class Post(BaseFieldsModel):
         is_published - доступность поста
         created_at - дата и время создания поста
     """
+
+    ELEMENTS_TO_SHOW = 5
 
     title = models.CharField(
         max_length=256,
@@ -129,9 +154,12 @@ class Post(BaseFieldsModel):
         verbose_name='Категория'
     )
 
-    class Meta:
+    class Meta(PublishedAndCreateModel.Meta):
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
 
     def __str__(self):
         return self.title
+
+    objects = PostQuerySet.as_manager()
+    published = PublishedPostManager()

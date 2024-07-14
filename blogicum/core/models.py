@@ -1,8 +1,13 @@
 from django.db import models
 
 
-class BaseFieldsModel(models.Model):
-    """Абстрактная модель. Добвляет общие для моеделей поля"""
+class PublishedAndCreateModel(models.Model):
+    """
+    Абстрактная модель. Добвляет общие для моеделей поля:
+    is_published (обязательное) - для хранения информации о том, нужно ли
+    выводить публикацию;
+    created_at - для хранения информации о том, когда была добавлена запись
+    """
 
     is_published = models.BooleanField(
         default=True,
@@ -20,3 +25,4 @@ class BaseFieldsModel(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at',)
