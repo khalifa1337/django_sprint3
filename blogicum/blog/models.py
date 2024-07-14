@@ -10,6 +10,7 @@ User = get_user_model()
 
 class PostQuerySet(models.QuerySet):
     """Отдельная фильтрация QurySet для постов"""
+
     def with_actual_data(self):
         """Фильтрация актуальной даты."""
         return self.filter(pub_date__lte=timezone.now())

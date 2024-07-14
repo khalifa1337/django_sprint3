@@ -4,6 +4,7 @@ from django.utils import timezone
 from .models import Category, Post
 from core.constants import ELEMENTS_TO_SHOW
 
+
 def index(request):
     """Функция для отображения главной страницы."""
     template = 'blog/index.html'

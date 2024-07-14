@@ -16,7 +16,6 @@ class LocationAdmin(admin.ModelAdmin):
     list_editable = common_list
 
 
-
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     common_list = (
