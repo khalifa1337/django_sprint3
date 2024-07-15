@@ -1,39 +1,12 @@
-from django.contrib.auth import get_user_model
-from django.db import models
-from django.utils import timezone
-
 from core.constants import STANDART_MAX_LENGHT
 from core.models import PublishedAndCreateModel
+from django.contrib.auth import get_user_model
+from django.db import models
+
+from .managers import PublishedPostManager
+from .querysets import PostQuerySet
 
 User = get_user_model()
-
-
-class PostQuerySet(models.QuerySet):
-    """Отдельная фильтрация QurySet для постов"""
-
-    def with_actual_data(self):
-        """Фильтрация актуальной даты."""
-        return self.filter(pub_date__lte=timezone.now())
-
-    def published(self):
-        """Фильтрация доступности для публикации."""
-        return self.filter(is_published=True)
-
-    def category_published(self):
-        """Фильтрация доступности категории."""
-        return self.filter(category__is_published=True)
-
-
-class PublishedPostManager(models.Manager):
-    """Менеджер для получения отфильтрованного QuerySet."""
-
-    def get_queryset(self) -> models.QuerySet:
-        return (
-            PostQuerySet(self.model)
-            .with_actual_data()
-            .published()
-            .category_published()
-        )
 
 
 class Category(PublishedAndCreateModel):
@@ -160,12 +133,12 @@ class Post(PublishedAndCreateModel):
         verbose_name='Категория'
     )
 
+    objects = PostQuerySet.as_manager()
+    published = PublishedPostManager()
+
     class Meta(PublishedAndCreateModel.Meta):
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
 
     def __str__(self):
         return self.title
-
-    objects = PostQuerySet.as_manager()
-    published = PublishedPostManager()
