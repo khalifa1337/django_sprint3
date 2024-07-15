@@ -37,7 +37,7 @@ def category_posts(request, category_slug):
     post_list = Post.objects.filter(
         pub_date__lte=timezone.now(),
         is_published=True,
-        category__slug=category.slug
+        category=category
     )
     context = {'category': category, 'post_list': post_list}
     return render(request, template, context)
