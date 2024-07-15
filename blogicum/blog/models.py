@@ -1,7 +1,8 @@
-from core.constants import STANDART_MAX_LENGHT
-from core.models import PublishedAndCreateModel
 from django.contrib.auth import get_user_model
 from django.db import models
+
+from core.constants import STANDART_MAX_LENGHT
+from core.models import PublishedAndCreateModel
 
 from .managers import PublishedPostManager
 from .querysets import PostQuerySet
