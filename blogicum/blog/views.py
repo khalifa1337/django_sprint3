@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
-from .models import Category, Post
 from core.constants import ELEMENTS_TO_SHOW
+
+from .models import Category, Post
 
 
 def index(request):

@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from core.models import PublishedAndCreateModel
 from core.constants import STANDART_MAX_LENGHT
+from core.models import PublishedAndCreateModel
 
 User = get_user_model()
 
